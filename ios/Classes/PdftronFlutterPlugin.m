@@ -118,6 +118,23 @@
     }
 }
 
++ (void)emitTouchEventWithPoint:(CGPoint)point pageNumber:(int)pageNumber
+{
+    // Customize this method to communicate with the Flutter side and emit the touch event
+    // You can use method channels or other mechanisms provided by the Flutter framework to send the event data
+    
+    // Example using FlutterMethodChannel
+    FlutterMethodChannel* channel = [FlutterMethodChannel methodChannelWithName:@"pdftron_flutter" binaryMessenger:[UIApplication sharedApplication].delegate.window.rootViewController];
+    
+    NSDictionary *eventData = @{
+        @"x": @(point.x),
+        @"y": @(point.y),
+        @"pageNumber": @(pageNumber)
+    };
+    
+    [channel invokeMethod:@"onTouch" arguments:eventData];
+}
+
 + (void)overrideControllerClasses
 {
     [PTOverrides overrideClass:[PTDocumentController class] withClass:[PTFlutterDocumentController class]];
@@ -1481,6 +1498,8 @@
         self.pageMovedEventSink(pageNumbersString);
     }
 }
+
+
 
 -(void)documentController:(PTDocumentController *)docVC scrollChanged:(NSString *)scrollString
 {
