@@ -223,34 +223,15 @@ static BOOL PT_addMethod(Class cls, SEL selector, void (^block)(id))
 
     int pageNumber = [self.pdfViewCtrl GetPageNumberFromScreenPt:touchLocation.x y:touchLocation.y];
     
-   
     PTPDFPoint *point = [[PTPDFPoint alloc] initWithPx:touchLocation.x py:touchLocation.y];
 
     PTPDFPoint *pagePoint = [self.pdfViewCtrl ConvScreenPtToPagePt:point page_num:pageNumber];
 
-    CGFloat x = pagePoint.x;
-    CGFloat y = pagePoint.y;
-    CGPoint pointResponse = CGPointMake(x, y);
+    CGPoint pointResponse = CGPointMake(pagePoint.x, pagePoint.y);
 
     [PdftronFlutterPlugin emitTouchEventWithPoint:pointResponse pageNumber:pageNumber];
-
-    // [self.pdfViewCtrl DocLockReadWithBlock:^{
-    //     PTPDFDoc *doc = [self.pdfViewCtrl GetDoc];
-    //     PTPage *page = [doc GetPage:pageNumber];
-    //     if (![page IsValid]) {
-    //         return;
-    //     }
-
-    //     PTAnnot *annot = [PTSquare CreateWithDoc:doc pos:pagePoint];
-    //     // Set annotation properties as needed, e.g.:
-    //     // [annot SetColor:...];
-    //     // [annot SetOpacity:...];
-    //     // ...
-
-    //     [page AnnotPushBack:annot];
-    //     [self.pdfViewCtrl UpdateWithAnnot:annot page_num:pageNumber];
-    // } error:nil];
 }
+
 
 - (void)setViewModeItemVisibility:(NSArray *)stringsArray hidden:(BOOL)value
 {
