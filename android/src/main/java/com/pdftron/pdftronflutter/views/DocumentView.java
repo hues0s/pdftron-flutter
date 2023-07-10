@@ -44,6 +44,9 @@ import static com.pdftron.pdftronflutter.helpers.PluginUtils.handleOnConfigurati
 import static com.pdftron.pdftronflutter.helpers.PluginUtils.handleOnDetach;
 import static com.pdftron.pdftronflutter.helpers.PluginUtils.handleOpenDocError;
 
+import android.view.MotionEvent;
+import com.pdftron.pdftronflutter.PdftronFlutterPlugin;
+
 public class DocumentView extends com.pdftron.pdf.controls.DocumentView2 implements ViewerComponent {
     private ViewerImpl mImpl = new ViewerImpl(this);
 
@@ -572,7 +575,23 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView2 impleme
     @Nullable
     public PDFViewCtrl getPdfViewCtrl() {
         if (getPdfViewCtrlTabFragment() != null) {
-            return getPdfViewCtrlTabFragment().getPDFViewCtrl();
+            PDFViewCtrl pdfViewCtrl = getPdfViewCtrlTabFragment().getPDFViewCtrl();
+            pdfViewCtrl.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            double touchX = event.getX();
+                            double touchY = event.getY();
+                            int pageNumber = pdfViewCtrl.getPageNumberFromScreenPt(touchX, touchY);
+                            double[] pageCoordinates = pdfViewCtrl.convScreenPtToPagePt(touchX, touchY, pageNumber);
+                            PdftronFlutterPlugin.emitTouchEventWithPoint(pageCoordinates[0], pageCoordinates[1], pageNumber);
+                            break;   
+                    }
+                    return false;
+                }
+            });
+            return pdfViewCtrl;
         }
         return null;
     }
