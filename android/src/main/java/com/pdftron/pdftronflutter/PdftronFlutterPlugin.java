@@ -31,8 +31,8 @@ public class PdftronFlutterPlugin implements FlutterPlugin, ActivityAware {
 
     public PdftronFlutterPlugin() { }
 
-    public static void emitTouchEventWithPoint(double x, double y, double pageNumber) {
-        Map<String, Double> eventData = new HashMap<>();
+    public static void emitTouchEventWithPoint(double x, double y, int pageNumber) {
+        Map<String, Object> eventData = new HashMap<>();
         eventData.put("x", x);
         eventData.put("y", y);
         eventData.put("pageNumber", pageNumber);
