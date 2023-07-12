@@ -575,18 +575,27 @@ public class DocumentView extends com.pdftron.pdf.controls.DocumentView2 impleme
     @Nullable
     public PDFViewCtrl getPdfViewCtrl() {
         if (getPdfViewCtrlTabFragment() != null) {
-            PDFViewCtrl pdfViewCtrl = getPdfViewCtrlTabFragment().getPDFViewCtrl();
+            final PDFViewCtrl pdfViewCtrl = getPdfViewCtrlTabFragment().getPDFViewCtrl();
             pdfViewCtrl.setOnTouchListener(new View.OnTouchListener() {
+                private float startX, startY;
+
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            double touchX = event.getX();
-                            double touchY = event.getY();
-                            int pageNumber = pdfViewCtrl.getPageNumberFromScreenPt(touchX, touchY);
-                            double[] pageCoordinates = pdfViewCtrl.convScreenPtToPagePt(touchX, touchY, pageNumber);
-                            PdftronFlutterPlugin.emitTouchEventWithPoint(pageCoordinates[0], pageCoordinates[1], pageNumber);
-                            break;   
+                            startX = event.getX();
+                            startY = event.getY();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            float endX = event.getX();
+                            float endY = event.getY();
+
+                            if (Math.abs(startX - endX) < 10 && Math.abs(startY - endY) < 10) {
+                                int pageNumber = pdfViewCtrl.getPageNumberFromScreenPt(startX, startY);
+                                double[] pageCoordinates = pdfViewCtrl.convScreenPtToPagePt(startX, startY, pageNumber);
+                                PdftronFlutterPlugin.emitTouchEventWithPoint(pageCoordinates[0], pageCoordinates[1], pageNumber);
+                            }
+                            break;
                     }
                     return false;
                 }
